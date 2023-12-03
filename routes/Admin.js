@@ -57,7 +57,7 @@ router.get('/', async (req, res) => {
 
 
 
-// edit a user balance or password
+// edit a user balance or profit
 router.put('/edit/:id', async (req, res) => {
     var userId = req.params.id
     var newBalance = req.body.balance
@@ -71,6 +71,18 @@ router.put('/edit/:id', async (req, res) => {
     }).catch((err) => {
         console.log(err);
     });
+})
+
+// delete a user
+router.post('/edit/delete/:id', async (req, res) => {
+    var userId = req.params.id
+
+    const user = await User.deleteOne({ _id: userId })
+        .then((result) => {
+            res.status(200).send()
+        }).catch((err) => {
+            console.log(err);
+        });
 })
 
 

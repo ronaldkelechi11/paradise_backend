@@ -17,6 +17,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage })
 
 
+// Return user object
 router.get('/:username', async (req, res) => {
     var username = req.params.username
 
@@ -28,7 +29,6 @@ router.get('/:username', async (req, res) => {
         }
         else {
             res.status(501).send()
-            console.log("User doesn't exist");
         }
     } catch (error) {
         console.log(error);
@@ -109,7 +109,7 @@ router.post('/:username/withdrawal', async (req, res) => {
 })
 
 
-// Returns a list of all transactions from a given user
+// Returns a list of all deposits from a given user
 router.get("/:username/transactions", async (req, res) => {
     const username = req.params.username
 
