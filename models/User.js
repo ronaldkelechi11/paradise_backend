@@ -44,10 +44,22 @@ var userSchema = new mongoose.Schema({
             ref: "Transaction"
         }
     ],
+    withdrawals: [
+        {
+            type: mongoose.SchemaTypes.ObjectId,
+            ref: "Withdrawal"
+        }
+    ],
     refferals: [
         {
             type: mongoose.SchemaTypes.ObjectId,
             ref: "User"
+        }
+    ],
+    messages: [
+        {
+            type: mongoose.SchemaTypes.ObjectId,
+            ref: "Message"
         }
     ]
 })

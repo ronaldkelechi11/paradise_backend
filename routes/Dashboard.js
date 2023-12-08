@@ -2,6 +2,7 @@ const express = require('express')
 const multer = require('multer');
 const User = require('../models/User');
 const Transaction = require('../models/Transaction');
+const Message = require('../models/Message');
 const router = express.Router()
 const path = require('path');
 const Withdrawal = require('../models/Withdrawal');
@@ -17,7 +18,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage })
 
 
-// Return user object
+// Return user details
 router.get('/:username', async (req, res) => {
     var username = req.params.username
 
@@ -97,7 +98,9 @@ router.post('/:username/withdrawal', async (req, res) => {
         newWithdrawal.user = user._id
 
         var withdrawal = new Withdrawal(newWithdrawal)
-        withdrawal.save().then((result) => {
+        withdrawal.save().then(async (result) => {
+            user.withdrawals.push(result._id)
+            await user.save();
             res.status(200).send()
         }).catch((err) => {
             res.status(404).send()
@@ -106,6 +109,26 @@ router.post('/:username/withdrawal', async (req, res) => {
         console.log(error);
     }
 
+})
+
+
+// Return a list of all withdrawals from a particular user
+router.get('/:username/withdrawals', async (req, res) => {
+    const username = req.params.username
+
+    const user = await User.findOne({ username: username })
+    if (user) {
+        user.password = ""
+        user.populate("withdrawals")
+            .then((result) => {
+                res.status(200).send(user)
+            }).catch((err) => {
+                res.status(501).send()
+            });
+    }
+    else {
+        res.status(409).send()
+    }
 })
 
 
@@ -128,6 +151,50 @@ router.get("/:username/transactions", async (req, res) => {
         res.status(409).send()
     }
 
+})
+
+
+
+// Send a message
+router.post('/:username/livesupport', async (req, res) => {
+    var sender = req.body.sender
+    var receiver = req.body.receiver
+    var text = req.body.text
+
+    var newMessage = new Message({
+        sender: sender,
+        receiver: receiver,
+        text: text
+    })
+
+    var user = await User.findOne({ username: sender })
+    newMessage.save()
+        .then(async (result) => {
+            user.messages.push(result._id)
+            user.updateOne({ messages: user.messages })
+                .then((result) => {
+                    res.status(200).send()
+                }).catch((err) => {
+                    console.log(err);
+                });
+        }).catch((err) => {
+            console.log(err);
+        });
+})
+
+
+// Get all messages
+router.get('/:username/livesupport', async (req, res) => {
+
+    const username = req.params.username
+
+    const user = User.findOne({ username: username })
+    user.populate('messages')
+        .then((result) => {
+            res.status(200).send(result.messages)
+        }).catch((err) => {
+            console.log(err);
+        });
 })
 
 module.exports = router

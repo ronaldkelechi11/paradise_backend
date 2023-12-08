@@ -1,6 +1,7 @@
 const express = require('express')
 const User = require('../models/User');
 const Transaction = require('../models/Transaction');
+const Message = require('../models/Message');
 const Withdrawal = require('../models/Withdrawal');
 const router = express.Router()
 
@@ -147,6 +148,45 @@ router.put("/transaction/verified/:id", (req, res) => {
 })
 
 
+// Get all messages linked to a particular user and admin
+router.get('/messages/:username', async (req, res) => {
+
+    var username = req.params.username
+
+    var user = User.findOne({ username: username })
+    user.populate('messages').then((result) => {
+        res.status(200).send(result.messages)
+    }).catch((err) => {
+        console.log(err);
+    });
+})
+
+// Post new message to that user
+router.post('/messages/:username', async (req, res) => {
+    var sender = req.body.sender
+    var receiver = req.body.receiver
+    var text = req.body.text
+
+    var newMessage = new Message({
+        text: text,
+        sender: sender,
+        receiver: receiver
+    })
+    var user = await User.findOne({ username: receiver })
+    newMessage.save()
+        .then(async (result) => {
+            user.messages.push(result._id)
+
+            user.updateOne({ messages: user.messages })
+                .then((result) => {
+                    res.status(200).send()
+                }).catch((err) => {
+                    console.log(err);
+                });
+        }).catch((err) => {
+            console.log(err);
+        });
+})
 
 
 module.exports = router
