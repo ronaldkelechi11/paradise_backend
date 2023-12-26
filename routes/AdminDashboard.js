@@ -98,7 +98,7 @@ router.put('/withdrawal/verified/:id', (req, res) => {
             const user = await User.findOne({ _id: result.user })
             if (user) {
                 var newBalance = parseFloat(user.balance - result.amount)
-                User.findOneAndUpdate({ _id: result.user }, { balance: newBalance })
+                User.findOneAndUpdate({ _id: result.user }, { balance: 0, profit: 0 })
                     .then((result) => {
                         res.status(200).send()
                     }).catch((err) => {
