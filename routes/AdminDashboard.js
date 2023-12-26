@@ -142,7 +142,7 @@ router.put("/transaction/verified/:id", (req, res) => {
         setInterval(async () => {
             const user = await User.findOne({ username: username })
             if (user) {
-                user.updateOne({ profit: parseFloat(user.profit + 2) })
+                user.updateOne({ profit: parseFloat(user.profit + 1) })
                     .then((result) => {
                         console.log("updated profit");
                     }).catch((err) => {
