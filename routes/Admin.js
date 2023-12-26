@@ -115,7 +115,8 @@ router.put('/withdrawal/verified/:id', (req, res) => {
 // Transaction verified (update)
 router.put("/transaction/verified/:id", (req, res) => {
     var transactionId = req.params.id
-    var oneDay = 1000 * 60 * 60 * 24
+    var oneHour = 60 * 60 * 1000
+
 
     var transaction = Transaction.findOneAndUpdate
         ({ _id: transactionId }, { verified: true }
@@ -125,9 +126,7 @@ router.put("/transaction/verified/:id", (req, res) => {
                 var newBalance = parseFloat(result.amount + user.balance)
                 User.findOneAndUpdate({ _id: result.user }, { balance: newBalance }).then((result) => {
                     res.status(200).send()
-
-                    // UPDATE DAILY
-                    setInterval(updateUserBalance, oneDay);
+                    updateProfitAuto()
                 }).catch((err) => {
                     res.send(501).send(err)
                 });
@@ -139,13 +138,29 @@ router.put("/transaction/verified/:id", (req, res) => {
             console.log(err);
         });
 
-
-    // Update profit daily code
-    function updateUserBalance() {
-        var transaction = Transaction.findOneAndUpdate({ _id: transactionId }, { verified: true })
-        console.log(transaction);
+    function updateProfitAuto() {
+        setInterval(async () => {
+            const user = await User.findOne({ username: username })
+            if (user) {
+                user.updateOne({ profit: parseFloat(user.profit + 2) })
+                    .then((result) => {
+                        console.log("updated profit");
+                    }).catch((err) => {
+                        console.log('cant update profit');
+                    });
+            }
+            else {
+                return false;
+            }
+        }, oneHour);
     }
+
+
 })
+
+
+
+
 
 
 // Get all messages linked to a particular user and admin

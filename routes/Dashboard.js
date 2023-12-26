@@ -42,7 +42,6 @@ router.post("/:username/deposit",
     upload.single('file'),
     async (req, res) => {
         var username = req.params.username
-        var oneHour = 60 * 60 * 1000
 
         const transaction = new Transaction({
             amount: req.body.amount,
@@ -76,20 +75,6 @@ router.post("/:username/deposit",
                 console.log(err);
             });
 
-
-        function updateProfitAuto() {
-            setInterval(async () => {
-                const user = await User.findOne({ username: username })
-                if (user) {
-                    user.updateOne({ profit: parseFloat(user.profit + 2) })
-                        .then((result) => {
-                            console.log("updated profit");
-                        }).catch((err) => {
-                            console.log('cant update profit');
-                        });
-                }
-            }, oneHour);
-        }
     })
 
 
@@ -97,8 +82,6 @@ router.post("/:username/deposit",
 // Making a withdrawal
 router.post('/:username/withdrawal', async (req, res) => {
     var username = req.params.username
-
-    // Make a code to check balance if it's less than 5 or less than user account balance
 
     var walletAddress = req.body.walletAddress
     var amount = req.body.amount
