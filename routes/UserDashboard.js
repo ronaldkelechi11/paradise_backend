@@ -66,7 +66,6 @@ router.post("/:username/deposit",
                     user.updateOne({ transactions: user.transactions })
                         .then((result) => {
                             res.status(200).send()
-                            updateProfitAuto()
                         }).catch((err) => {
                             console.log(err);
                         });
