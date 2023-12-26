@@ -4,8 +4,8 @@ const { mongoose } = require('mongoose')
 const app = express()
 
 const PORT = process.env.PORT || 4000
-const dbUrl = "mongodb+srv://ronaldkelechi11:wKit0n89fCFCtTU5@paradiseinvestment.msdxawb.mongodb.net/?retryWrites=true&w=majority" || process.env.MONGO_URL
-// const dbUrl = "mongodb://127.0.0.1:27017/paradiseDB"
+// const dbUrl = "mongodb+srv://ronaldkelechi11:wKit0n89fCFCtTU5@paradiseinvestment.msdxawb.mongodb.net/?retryWrites=true&w=majority" || process.env.MONGO_URL
+const dbUrl = "mongodb://127.0.0.1:27017/paradiseDB"
 
 
 
